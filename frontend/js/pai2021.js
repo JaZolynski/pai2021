@@ -1,4 +1,9 @@
-let app = angular.module('pai2021', ['ngRoute', 'ngSanitize', 'ngAnimate', 'ui.bootstrap'])
+let app = angular.module('pai2021', ['ngRoute', 'ngSanitize', 'ngAnimate', 'ui.bootstrap', 'ngCookies', 'ws'])
+
+// websocket config
+app.config(['wsProvider', function(wsProvider) {
+    wsProvider.setUrl('ws://' + window.location.host)
+}])
 
 // router menu
 app.constant('routes', [
@@ -17,7 +22,7 @@ app.config(['$routeProvider', '$locationProvider', 'routes', function($routeProv
 }])
 
 // usługi wspólne
-app.service('common', [ '$uibModal', function($uibModal) {
+app.service('common', [ '$cookies', 'ws', '$uibModal', function($cookies, ws, $uibModal) {
     let common = this
 
     common.login = null
@@ -78,7 +83,13 @@ app.service('common', [ '$uibModal', function($uibModal) {
         permissions[activity].forEach(function(role) { if(common.roles.includes(role)) intersection.push(role) })
         return intersection.length > 0
     }
-    
+
+    // websocket initialization
+    let wsInitMessage = { type: 'init', session: $cookies.get('session') }
+    ws.send(JSON.stringify(wsInitMessage))
+    ws.on('message', function(messageEvent) {
+        console.log('broadcast', messageEvent.data)
+    })    
 }])
 
 // confirmation dialog controller

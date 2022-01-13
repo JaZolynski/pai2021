@@ -21,6 +21,7 @@ const deposit = module.exports = {
                 db.transactions.insertOne(depositData, function(err, result) {
                     if(!err) {
                         lib.sendJson(env.res, depositData)
+                        lib.broadcast(depositData)
                     } else {
                         lib.sendError(env.res, 400, 'transactions.insertOne() failed')
                     }

@@ -1,6 +1,10 @@
+const ws = require('ws')
+
 const lib = module.exports = {
 
     sessions: {}, // { uuid: { }, ... }
+
+    wsServer: null,
 
     sendJson: function(res, obj = null) {
         res.writeHead(200, { 'Content-type': 'application/json' })
@@ -54,6 +58,17 @@ const lib = module.exports = {
         let intersection = []
         roles.forEach(function(role) { if(permittedRoles.includes(role)) intersection.push(role) })
         return intersection.length > 0
+    },
+
+    broadcast: function(data, selector = null) {
+        let n = 0
+        lib.wsServer.clients.forEach(function(client) {
+            if(client.readyState == ws.OPEN && (!selector || selector(client))) {
+                client.send(JSON.stringify(data))
+                n++
+            }
+        })
+        console.log('Sending a message ', data, 'to', n, 'clients')
     }
         
 }
