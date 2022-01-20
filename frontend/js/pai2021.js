@@ -22,11 +22,12 @@ app.config(['$routeProvider', '$locationProvider', 'routes', function($routeProv
 }])
 
 // usługi wspólne
-app.service('common', [ '$cookies', 'ws', '$uibModal', function($cookies, ws, $uibModal) {
+app.service('common', [ '$cookies', '$uibModal', function($cookies, $uibModal) {
     let common = this
 
     common.login = null
     common.roles = []
+    common.session = $cookies.get('session')
 
     common.alert = {
         text: '',
@@ -83,13 +84,6 @@ app.service('common', [ '$cookies', 'ws', '$uibModal', function($cookies, ws, $u
         permissions[activity].forEach(function(role) { if(common.roles.includes(role)) intersection.push(role) })
         return intersection.length > 0
     }
-
-    // websocket initialization
-    let wsInitMessage = { type: 'init', session: $cookies.get('session') }
-    ws.send(JSON.stringify(wsInitMessage))
-    ws.on('message', function(messageEvent) {
-        console.log('broadcast', messageEvent.data)
-    })    
 }])
 
 // confirmation dialog controller
@@ -101,7 +95,7 @@ app.controller('ConfirmDialog', [ '$uibModalInstance', 'options', function($uibM
     ctrl.cancel = function() { $uibModalInstance.dismiss('cancel') }
 }])
 
-app.controller('ContainerCtrl', [ '$http', '$location', '$scope', '$uibModal', 'common', 'routes', function($http, $location, $scope, $uibModal, common, routes) {
+app.controller('ContainerCtrl', [ '$http', '$location', '$scope', '$uibModal', 'ws', 'common', 'routes', function($http, $location, $scope, $uibModal, ws, common, routes) {
     let ctrl = this
     ctrl.alert = common.alert
 
@@ -189,4 +183,21 @@ app.controller('ContainerCtrl', [ '$http', '$location', '$scope', '$uibModal', '
     }
     
     rebuildMenu()
+    
+    // websocket initialization
+    let wsInitMessage = { type: 'init', session: common.session }
+    ws.send(JSON.stringify(wsInitMessage))
+    ws.on('message', function(messageEvent) {
+        console.log('Message from backend', messageEvent.data)
+        try {
+            let message = JSON.parse(messageEvent.data)
+            switch(message.operation) {
+                case 'deposit':
+                    $scope.$broadcast('refresh', { collection: 'persons' })
+                    break
+            }
+        } catch(ex) {
+            console.error('Data from backend is not JSON')
+        }
+    })    
 }])

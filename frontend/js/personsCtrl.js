@@ -1,4 +1,4 @@
-app.controller('PersonsCtrl', [ '$http', 'common', function($http, common) {
+app.controller('PersonsCtrl', [ '$http', '$scope', 'common', function($http, $scope, common) {
     let ctrl = this
 
     ctrl.persons = []
@@ -76,5 +76,10 @@ app.controller('PersonsCtrl', [ '$http', 'common', function($http, common) {
     }
 
     ctrl.refreshData()
-    
+
+    $scope.$on('refresh', function(event, parameters) {
+        if(parameters.collection == 'persons' || parameters.collection == 'transactions') {
+            ctrl.refreshData()
+        }
+    })
 }])

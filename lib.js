@@ -49,8 +49,6 @@ const lib = module.exports = {
             }
         }
 
-        console.log('permittedRoles', permittedRoles)
-
         // jeśli url ma pustą tablicę ról, jest niechroniony
         if(permittedRoles.length < 1) return true
         if(!roles || roles.length < 1) return false
@@ -68,7 +66,7 @@ const lib = module.exports = {
                 n++
             }
         })
-        console.log('Sending a message ', data, 'to', n, 'clients')
+        console.log('Sending a message', JSON.stringify(data), 'to', n, 'clients')
     }
         
 }

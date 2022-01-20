@@ -21,7 +21,12 @@ const deposit = module.exports = {
                 db.transactions.insertOne(depositData, function(err, result) {
                     if(!err) {
                         lib.sendJson(env.res, depositData)
-                        lib.broadcast(depositData)
+                        depositData.operation = 'deposit'
+                        lib.broadcast(depositData, function(client) {
+                            if(client.session == env.session) return false // nie wysyłaj wiadomości do sprawcy
+                            let session = lib.sessions[client.session]
+                            return session && sessionArray.isArray(session.roles) && session.roles.includes('admin')
+                        })
                     } else {
                         lib.sendError(env.res, 400, 'transactions.insertOne() failed')
                     }
