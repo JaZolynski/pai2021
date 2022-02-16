@@ -11,6 +11,7 @@ const db = require('./db')
 const auth = require('./auth')
 const example = require('./example')
 const deposit = require('./deposit')
+const project = require('./project')
 
 let server = http.createServer()
 let fileServer = new nodestatic.Server('./frontend');
@@ -61,6 +62,8 @@ server.on('request', function(req, res) {
             case '/deposit':
                 deposit.handle(env)
                 break
+            case '/project':
+                project.handle(env)
             default:
                 fileServer.serve(req, res)
         }

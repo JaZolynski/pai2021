@@ -9,7 +9,8 @@ app.config(['wsProvider', function(wsProvider) {
 app.constant('routes', [
 	{ route: '/', templateUrl: 'homeView.html', controller: 'HomeCtrl', controllerAs: 'ctrl', menu: '<i class="fa fa-lg fa-home"></i>' },
 	{ route: '/persons', templateUrl: 'personsView.html', controller: 'PersonsCtrl', controllerAs: 'ctrl', menu: 'Osoby', roles: [ "admin" ] },
-    { route: '/transfers', templateUrl: 'transfersView.html', controller: 'TransfersCtrl', controllerAs: 'ctrl', menu: 'Transfery', roles: [ "admin", "user" ] }
+    { route: '/transfers', templateUrl: 'transfersView.html', controller: 'TransfersCtrl', controllerAs: 'ctrl', menu: 'Transfery', roles: [ "admin", "user" ] },
+    { route: '/projects', templateUrl: 'projectsView.html', controller: 'ProjectsCtrl', controllerAs: 'ctrl', menu: 'Projekty', roles: ["admin"]}
 ])
 
 // instalacja routera
